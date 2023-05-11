@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+  <title>Document</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(to right bottom, purple 50%, white);
+      height: 100vh;
+    }
+
+    .calculator {
+      width: 300px;
+      height: 600px;
+      margin: auto;
+      border-radius: 30px;
+      background: rgba(0, 0, 0, 0.6);
+      text-align: center;
+      border: 5px solid white;
+      padding: 5px;
+
+    }
+
+    td {
+      font-size: 30px;
+      font-family: 'Orbitron';
+      color: rgb(197, 192, 192);
+      padding: 5px;
+    }
+
+
+    #process,
+    #text {
+      text-align: right;
+    }
+
+    .blank {
+      height: 30px;
+    }
+
+    #process {
+      font-size: 20px;
+      height: 30px;
+      padding: 10px;
+    }
+
+    #text {
+      font-size: 50px;
+      height: 60px;
+      padding: 10px;
+    }
+
+    .text-purple {
+      color: rgb(211, 92, 211)
+    }
+
+    .bg-purple {
+      background: rgb(211, 92, 211);
+    }
+
+    .bg-gray {
+      background: #8b7e8b;
+    }
+
+    tr:nth-child(n+4):nth-child(-n+8) {
+      background: #4d394d;
+      cursor: pointer;
+    }
+
+    td:not(.blank, #process, #text):active {
+      position: relative;
+      top: 5px;
+    }
+
+    td:not(.blank, #process, #text) {
+      border-radius: 10px;
+      table-layout: fixed;
+      box-shadow: 1px 1px 1px #000;
+      margin: 5px;
+    }
+  </style>
+</head>
+
+<body>
+  <table class="calculator">
+    <tr>
+      <td colspan="4" class="blank"></td>
+
+    </tr>
+    <tr>
+      <td colspan="4" id="process">0</td>
+    </tr>
+    <tr>
+      <td colspan="4" id="text">0</td>
+    </tr>
+    <tr>
+      <td class="text-purple" style="font-size: 20px;padding: 3px;">AC</td>
+      <td class="text-purple">/</td>
+      <td class="text-purple">*</td>
+      <td id="delete" class="bg-purple">←</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td>8</td>
+      <td>9</td>
+      <td class="bg-purple">-</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>5</td>
+      <td>6</td>
+      <td class="bg-purple">+</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>2</td>
+      <td>3</td>
+      <td class="bg-purple" rowspan="2" style="border-radius: 10px 10px 20px 10px;">=</td>
+    </tr>
+    <tr>
+      <td style="border-radius: 10px 10px 10px 20px;">.</td>
+      <td>0</td>
+      <td>%</td>
+
+    </tr>
+  </table>
+  <script>
+    const btns = document.querySelectorAll('td:not(.blank, #process, #text)')
+    const text = document.getElementById('text')
+    const process = document.querySelector('#process')
+    const btnDelete = document.querySelector('#delete')
+
+    for (const btn of btns) {
+      btn.addEventListener('click', () => {
+        const btnText = btn.innerText
+        const operators = ['+', '-', '*', '/', '←']
+        const lastText = text.innerText[text.innerText.length - 1]
+        if (btnText === '=') {
+          if (!operators.includes(lastText)) {
+            text.innerText = eval(process.innerText)
+          }
+        }
+        else if (btnText === 'AC') {
+          text.innerText = '0'
+          process.innerText = '0'
+        }
+        else if (btnText === '←') {
+          if (process.innerText.length < 2) return
+          else {
+            process.innerText = process.innerText.slice(0, -1)
+          }
+        }
+        else if (process.innerText === '0' && !isNaN(parseInt(btnText))) {
+          process.innerText = btnText
+        }
+        else if (operators.includes(lastText)) {
+          if (!operators.includes(btnText)) {
+            process.innerText += btnText
+          }
+        }
+        else {
+          process.innerText += btnText
+        }
+      })
+    }
+
+    document.addEventListener('keydown', event => {
+      const btnText = event.key
+      const operators = ['+', '-', '*', '/', '←']
+      const lastText = text.innerText[text.innerText.length - 1]
+      if (btnText === '=' || btnText === 'Enter') {
+        if (!operators.includes(lastText)) {
+          text.innerText = eval(process.innerText)
+        }
+      }
+      else if (btnText === 'AC') {
+        text.innerText = '0'
+        process.innerText = '0'
+      }
+      else if (btnText === '←' || btnText === 'Backspace') {
+        if (process.innerText.length < 2) return
+        else {
+          process.innerText = process.innerText.slice(0, -1)
+        }
+      }
+      else if (process.innerText === '0' && !isNaN(parseInt(btnText))) {
+        process.innerText = btnText
+      }
+      else if (operators.includes(lastText)) {
+        if (!operators.includes(btnText) && !isNaN(parseInt(btnText))) {
+          process.innerText += btnText
+        }
+      }
+      else if (!isNaN(parseInt(btnText)) || operators.includes(btnText)) {
+        process.innerText += btnText
+      }
+    })
+  </script>
+</body>
+
+</html>
